@@ -1,3 +1,7 @@
+import {Match} from 'meteor/check';
+import {Meteor} from 'meteor/meteor';
+import {Tracker} from 'meteor/tracker';
+
 // To not have dependency on underscore.
 function isEmpty(object) {
   for (const name in object) {

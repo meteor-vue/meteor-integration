@@ -8,8 +8,11 @@ Package.onUse(function(api) {
   api.versionsFrom('1.4.1');
 
   api.use([
+    'check',
     'ecmascript',
-    'minimongo'
+    'meteor',
+    'minimongo',
+    'tracker'
   ]);
 
   api.mainModule('main.js', 'client');
