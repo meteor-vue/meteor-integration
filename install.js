@@ -6,10 +6,10 @@ import {Tracker} from 'meteor/tracker';
 function isEmpty(object) {
   for (const name in object) {
     if (object.hasOwnProperty(name)) {
-      return true;
+      return false;
     }
   }
-  return false;
+  return true;
 }
 
 export function install(Vue, options) {
