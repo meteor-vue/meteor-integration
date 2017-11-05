@@ -1,6 +1,6 @@
 Package.describe({
   name: 'vuejs:meteor-integration',
-  version: '0.1.2',
+  version: '0.1.3',
   summary: "Vue integration with Meteor."
 });
 
