@@ -12,6 +12,15 @@ function isEmpty(object) {
   return true;
 }
 
+// In Blaze, life-cycle callbacks are not run inside a reactive computation
+// but in Vue they are, so we isolate calls when inside a life-cycle callback.
+function isolate(vm, f) {
+  if (Tracker.currentComputation && Tracker.currentComputation._pureWatcher && vm.$parent && vm.$parent._watcher === Tracker.currentComputation._vueWatcher) {
+    return Tracker.nonreactive(f);
+  }
+  return f();
+}
+
 export function install(Vue, options) {
   Vue.mixin({
     beforeCreate() {
@@ -44,10 +53,9 @@ export function install(Vue, options) {
   }
 
   Vue.prototype.$autorun = function (f) {
-    const vm = this;
-    const computation = Tracker.nonreactive(() => {
+    const computation = isolate(this, () => {
       return Tracker.autorun((computation) => {
-        f.call(vm, computation);
+        f.call(this, computation);
       });
     });
 
@@ -115,13 +123,14 @@ export function install(Vue, options) {
 
     args.push(callbacks);
 
-    let subHandle;
-    if (options.connection) {
-      subHandle = options.connection.subscribe.apply(options.connection, args);
-    }
-    else {
-      subHandle = Meteor.subscribe.apply(Meteor, args);
-    }
+    const subHandle = isolate(this, () => {
+      if (options.connection) {
+        return options.connection.subscribe.apply(options.connection, args);
+      }
+      else {
+        return Meteor.subscribe.apply(Meteor, args);
+      }
+    });
 
     const stopHandle = function () {
       subHandle.stop();
