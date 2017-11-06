@@ -155,7 +155,7 @@ export function install(Vue, options) {
   Vue.prototype.$subscriptionsReady = function () {
     this._allSubsReadyDep.depend();
 
-    this._allSubsReady = this._subscriptionHandles.every(function (handle, index, array) {
+    this._allSubsReady = Array.from(this._subscriptionHandles.values()).every(function (handle, index, array) {
       return handle.ready();
     });
 
