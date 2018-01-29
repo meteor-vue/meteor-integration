@@ -12,10 +12,15 @@ function isEmpty(object) {
   return true;
 }
 
-// In Blaze, life-cycle callbacks are not run inside a reactive computation
-// but in Vue they are, so we isolate calls when inside a life-cycle callback.
+// In Blaze, life-cycle callbacks are not run inside a reactive computation but in Vue they are, so we isolate calls
+// when inside a life-cycle callback. Otherwise $autorun's computation runs only the first time, but then when the outside
+// reactive computation is invalidated, $autorun's computation stops. And because a life-cycle callback is not called
+// again, $autorun's computation is not recreated. Those life-cycle callbacks are not called from inside current vm's
+// main watcher, but from parent's or even ancestor's higher up. One possible check is to go over all ancestors and check
+// if current computation's watcher is one of ancestor's main watcher. But it seems just checking that the current
+// watcher is some component's main watcher is equivalent, but simpler.
 function isolate(vm, f) {
-  if (Tracker.currentComputation && Tracker.currentComputation._pureWatcher && vm.$parent && vm.$parent._watcher === Tracker.currentComputation._vueWatcher) {
+  if (Tracker.currentComputation && Tracker.currentComputation._pureWatcher && Tracker.currentComputation._vueWatcher.vm && Tracker.currentComputation._vueWatcher.vm._watcher === Tracker.currentComputation._vueWatcher) {
     return Tracker.nonreactive(f);
   }
   return f();
