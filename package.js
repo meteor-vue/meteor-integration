@@ -5,8 +5,9 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom('1.4.1');
+  api.versionsFrom('METEOR@1.4.4.5');
 
+  // Core dependencies.
   api.use([
     'check',
     'ecmascript',
