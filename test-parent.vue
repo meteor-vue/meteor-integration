@@ -1,0 +1,3 @@
+<template>
+  <test-child />
+</template>
